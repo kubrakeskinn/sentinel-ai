@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+
+.env
+
+.vscode/
+
+runs/
+outputs/
+
+*.mp4
+*.avi
+
+venv/
+.venv/
+yolov8n.pt
+*.pt
