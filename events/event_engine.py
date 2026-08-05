@@ -3,12 +3,9 @@ from __future__ import annotations
 from collections import deque
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Deque, Dict, List, Optional, Tuple
+from typing import Deque, Dict, List, Optional
 
-
-Centroid = Tuple[float, float]
-Rect = Tuple[int, int, int, int]
-TrackInput = Tuple[int, Centroid, Rect]
+from src.core.types import Centroid, Rect, TrackInput
 
 
 class EventType(str, Enum):
