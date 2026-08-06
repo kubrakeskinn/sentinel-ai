@@ -1,3 +1,3 @@
-from src.events import Event, EventEngine, EventEngineConfig, EventType
+from src.events import EventDetector, EventEngine, EventType
 
-__all__ = ["Event", "EventEngine", "EventEngineConfig", "EventType"]
+__all__ = ["EventDetector", "EventEngine", "EventType"]

@@ -8,8 +8,9 @@ class TestSrcImports(unittest.TestCase):
         self.assertTrue(callable(CentroidTracker))
 
     def test_events_import(self):
-        from src.events import EventEngine
+        from src.events import EventDetector, EventEngine
 
+        self.assertTrue(callable(EventDetector))
         self.assertTrue(callable(EventEngine))
 
     def test_legacy_tracker_shim(self):
@@ -18,8 +19,9 @@ class TestSrcImports(unittest.TestCase):
         self.assertTrue(callable(CentroidTracker))
 
     def test_legacy_events_shim(self):
-        from events import EventEngine, EventType
+        from events import EventDetector, EventEngine, EventType
 
+        self.assertTrue(callable(EventDetector))
         self.assertTrue(callable(EventEngine))
         self.assertEqual(EventType.RAPID_MOVEMENT.value, "rapid_movement")
 
