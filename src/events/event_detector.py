@@ -15,9 +15,11 @@ class TrackedObject:
 
 
 class EventDetector:
-    def __init__(self, max_positions: int = 30) -> None:
+    def __init__(self, max_positions: int = 30, loiter_duration_threshold: float = 5.0, loiter_movement_threshold: float = 10.0) -> None:
         self.track_history: Dict[int, TrackedObject] = {}
         self.max_positions = max_positions
+        self.loiter_duration_threshold = loiter_duration_threshold
+        self.loiter_movement_threshold = loiter_movement_threshold
 
     def update(self, tracks: List[Tuple[int, Centroid, Tuple[float, float, float, float]]]) -> None:
         timestamp = time.time()
@@ -36,6 +38,23 @@ class EventDetector:
             if len(obj.position_history) > self.max_positions:
                 obj.position_history = obj.position_history[-self.max_positions :]
             obj.last_seen = timestamp
+
+    def detect_loitering(self, track_id: int) -> bool:
+        track = self.track_history.get(track_id)
+        if track is None or len(track.position_history) < 2:
+            return False
+
+        duration = track.last_seen - track.first_seen
+        if duration <= self.loiter_duration_threshold:
+            return False
+
+        total_movement = 0.0
+        for previous, current in zip(track.position_history, track.position_history[1:]):
+            dx = current[0] - previous[0]
+            dy = current[1] - previous[1]
+            total_movement += (dx * dx + dy * dy) ** 0.5
+
+        return total_movement <= self.loiter_movement_threshold
 
     def reset(self) -> None:
         self.track_history.clear()
