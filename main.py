@@ -1,7 +1,7 @@
-from ultralytics import YOLO
 import cv2
 
 from events import EventEngine, EventType
+from src.detection.yolo_detector import YOLODetector
 from tracker import CentroidTracker
 
 CONF_THRESHOLD = 0.5
@@ -11,7 +11,7 @@ EVENT_COLORS = {
     EventType.SUDDEN_STOP: (255, 0, 255),
 }
 
-model = YOLO("yolov8n.pt")
+detector = YOLODetector("yolov8n.pt", CONF_THRESHOLD)
 tracker = CentroidTracker(max_disappeared=50, max_distance=120)
 event_engine = EventEngine()
 
@@ -23,14 +23,7 @@ while True:
     if not ret:
         break
 
-    results = model(frame, verbose=False)[0]
-
-    rects = []
-    for box in results.boxes:
-        if float(box.conf[0]) < CONF_THRESHOLD:
-            continue
-        x1, y1, x2, y2 = map(int, box.xyxy[0])
-        rects.append((x1, y1, x2, y2))
+    rects = detector.detect(frame)
 
     tracks = tracker.update(rects)
 
