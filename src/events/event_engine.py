@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import dataclass, field
-from typing import Deque, Dict, List, Optional
+from typing import Deque, Dict, List, Optional, Tuple
 
 from src.core.types import Centroid, Rect, TrackInput
 from src.events.models import Event, EventType
@@ -19,6 +19,7 @@ class EventEngineConfig:
     sudden_stop_prev_speed_threshold: float = 20.0
     sudden_stop_current_speed_threshold: float = 3.0
     cooldown_frames: int = 20
+    restricted_zone_polygon: Optional[List[Tuple[float, float]]] = None
 
 
 @dataclass
@@ -27,6 +28,7 @@ class _TrackState:
     speeds: Deque[float] = field(default_factory=lambda: deque(maxlen=60))
     loiter_frames: int = 0
     rapid_frames: int = 0
+    inside_restricted_zone: bool = False
     last_event_frame: Dict[EventType, int] = field(default_factory=dict)
 
 
@@ -49,6 +51,7 @@ class EventEngine:
             events.extend(self._detect_rapid_movement(object_id, state, smoothed_speed, centroid, rect))
             events.extend(self._detect_loitering(object_id, state, smoothed_speed, centroid, rect))
             events.extend(self._detect_sudden_stop(object_id, state, smoothed_speed, centroid, rect))
+            events.extend(self._detect_restricted_area(object_id, state, centroid))
 
         self._prune_inactive(active_ids)
         return events
@@ -202,6 +205,39 @@ class EventEngine:
                 },
             )
         ]
+
+    def _detect_restricted_area(self, object_id: int, state: _TrackState, centroid: Centroid) -> List[Event]:
+        if not self.config.restricted_zone_polygon:
+            return []
+
+        is_inside = self._point_in_polygon(centroid, self.config.restricted_zone_polygon)
+        if is_inside == state.inside_restricted_zone:
+            return []
+
+        state.inside_restricted_zone = is_inside
+        event_type = EventType.RESTRICTED_AREA_ENTRY if is_inside else EventType.RESTRICTED_AREA_EXIT
+        return [
+            Event(
+                event_type=event_type,
+                object_id=object_id,
+                frame=self._frame,
+                speed=0.0,
+                centroid=centroid,
+                metadata={},
+            )
+        ]
+
+    @staticmethod
+    def _point_in_polygon(point: Centroid, polygon: List[Tuple[float, float]]) -> bool:
+        x, y = point
+        inside = False
+        for i in range(len(polygon)):
+            x1, y1 = polygon[i]
+            x2, y2 = polygon[(i + 1) % len(polygon)]
+            intersects = ((y1 > y) != (y2 > y)) and (x < (x2 - x1) * (y - y1) / (y2 - y1) + x1)
+            if intersects:
+                inside = not inside
+        return inside
 
     def _can_emit(self, state: _TrackState, event_type: EventType) -> bool:
         last_frame = state.last_event_frame.get(event_type)

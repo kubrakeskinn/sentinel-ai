@@ -11,6 +11,8 @@ class EventType(str, Enum):
     RAPID_MOVEMENT = "rapid_movement"
     LOITERING = "loitering"
     SUDDEN_STOP = "sudden_stop"
+    RESTRICTED_AREA_ENTRY = "restricted_area_entry"
+    RESTRICTED_AREA_EXIT = "restricted_area_exit"
 
 
 @dataclass(frozen=True)
