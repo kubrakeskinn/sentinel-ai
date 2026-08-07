@@ -1,7 +1,7 @@
 import unittest
 
 from src.events.event_engine import EventEngine, EventEngineConfig
-from src.events.models import EventType
+from src.events.models import EventSeverity, EventType
 
 
 class TestEventEngine(unittest.TestCase):
@@ -74,6 +74,10 @@ class TestEventEngine(unittest.TestCase):
         self.assertEqual(events[0].object_id, 1)
         self.assertEqual(events[0].centroid, (3.0, 0.0))
 
+    def test_default_severity_remains_low(self):
+        event = EventType.LOITERING
+        self.assertEqual(event.value, "loitering")
+
     def test_no_polygon_configured_no_restricted_area_events(self):
         engine = EventEngine(EventEngineConfig(cooldown_frames=0))
         events = engine.update([(1, (3.0, 1.0), (0.0, 0.0, 2.0, 2.0))])
@@ -94,6 +98,7 @@ class TestEventEngine(unittest.TestCase):
         self.assertEqual(events[0].event_type, EventType.RESTRICTED_AREA_ENTRY)
         self.assertEqual(events[0].object_id, 1)
         self.assertEqual(events[0].centroid, (1.0, 1.0))
+        self.assertEqual(events[0].severity, EventSeverity.HIGH)
 
     def test_restricted_area_exit_event_when_track_leaves_zone(self):
         config = EventEngineConfig(
@@ -109,6 +114,7 @@ class TestEventEngine(unittest.TestCase):
         self.assertEqual(events[0].event_type, EventType.RESTRICTED_AREA_EXIT)
         self.assertEqual(events[0].object_id, 1)
         self.assertEqual(events[0].centroid, (3.0, 1.0))
+        self.assertEqual(events[0].severity, EventSeverity.HIGH)
 
     def test_staying_inside_zone_does_not_emit_duplicate_entry(self):
         config = EventEngineConfig(
@@ -123,6 +129,46 @@ class TestEventEngine(unittest.TestCase):
         self.assertEqual(len(first_events), 1)
         self.assertEqual(first_events[0].event_type, EventType.RESTRICTED_AREA_ENTRY)
         self.assertEqual(second_events, [])
+
+    def test_sudden_stop_emits_high_severity(self):
+        config = EventEngineConfig(
+            history_size=5,
+            smoothing_window=1,
+            sudden_stop_prev_speed_threshold=1.0,
+            sudden_stop_current_speed_threshold=0.2,
+            cooldown_frames=0,
+        )
+        engine = EventEngine(config)
+
+        tracks = [
+            (1, (0.0, 0.0), (0.0, 0.0, 2.0, 2.0)),
+            (1, (3.0, 0.0), (0.0, 0.0, 2.0, 2.0)),
+            (1, (3.0, 0.0), (0.0, 0.0, 2.0, 2.0)),
+        ]
+
+        events = engine.update(tracks)
+
+        self.assertEqual(events[0].severity, EventSeverity.HIGH)
+
+    def test_rapid_movement_emits_medium_severity(self):
+        config = EventEngineConfig(
+            history_size=5,
+            smoothing_window=1,
+            rapid_speed_threshold=1.0,
+            rapid_min_frames=2,
+            cooldown_frames=0,
+        )
+        engine = EventEngine(config)
+
+        tracks = [
+            (1, (0.0, 0.0), (0.0, 0.0, 2.0, 2.0)),
+            (1, (3.0, 0.0), (0.0, 0.0, 2.0, 2.0)),
+            (1, (6.0, 0.0), (0.0, 0.0, 2.0, 2.0)),
+        ]
+
+        events = engine.update(tracks)
+
+        self.assertEqual(events[0].severity, EventSeverity.MEDIUM)
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from typing import Deque, Dict, List, Optional, Tuple
 
 from src.core.types import Centroid, Rect, TrackInput
-from src.events.models import Event, EventType
+from src.events.models import Event, EventSeverity, EventType
 
 
 @dataclass
@@ -121,6 +121,7 @@ class EventEngine:
                 frame=self._frame,
                 speed=smoothed_speed,
                 centroid=centroid,
+                severity=EventSeverity.MEDIUM,
                 metadata={
                     "threshold": self.config.rapid_speed_threshold,
                     "consecutive_frames": float(state.rapid_frames),
@@ -157,6 +158,7 @@ class EventEngine:
                 frame=self._frame,
                 speed=smoothed_speed,
                 centroid=centroid,
+                severity=EventSeverity.MEDIUM,
                 metadata={
                     "threshold": self.config.loiter_speed_threshold,
                     "duration_frames": float(state.loiter_frames),
@@ -195,6 +197,7 @@ class EventEngine:
                 frame=self._frame,
                 speed=smoothed_speed,
                 centroid=centroid,
+                severity=EventSeverity.HIGH,
                 metadata={
                     "previous_speed": previous_speed,
                     "current_speed": smoothed_speed,
@@ -223,6 +226,7 @@ class EventEngine:
                 frame=self._frame,
                 speed=0.0,
                 centroid=centroid,
+                severity=EventSeverity.HIGH,
                 metadata={},
             )
         ]
