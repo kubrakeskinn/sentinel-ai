@@ -1,58 +1,77 @@
 # Sentinel AI 🚨
 
-AI-Based Video Analysis and Event Detection Platform
-
-## Overview
-
-Sentinel AI is an AI-powered computer vision platform designed for real-time video analysis and security-oriented event detection.
-
-The system processes live or recorded video streams to detect objects, track their movement, and provide structured insights about potential security-relevant events.
-
-The project is developed as a defense-oriented R&D prototype with a modular architecture that enables future extensions such as advanced behavior analysis, multi-camera support, and edge deployment.
+AI-Powered Video Surveillance & Event Detection System
 
 ---
 
-## Current Capabilities
+## Overview
 
-### Computer Vision Pipeline
+Sentinel AI is an AI-based computer vision system designed for real-time video analysis, object tracking, and behavior-driven event detection.
 
-- Real-time object detection using YOLOv8
+The system processes video streams (live or recorded) and transforms raw visual data into actionable insights by identifying human activity, tracking movement patterns, and detecting security-relevant events.
+
+This project is developed as a defense-oriented prototype focusing on scalable, modular, and real-time AI systems.
+
+---
+
+## Key Features
+
+### 🎯 Real-Time Detection & Tracking
+- Human detection using YOLOv8
 - Multi-object tracking with persistent IDs
-- Bounding box visualization and confidence-based filtering
-- Video stream processing from camera sources
-- Modular pipeline architecture for future event analysis
+- Confidence-based filtering
+- Stable tracking across frames
+
+### 🧠 Event Detection Engine
+- Loitering detection
+- Movement-based anomaly detection
+- Sudden behavior changes
+- Event triggering with object-level association
+
+### 🎥 Video Processing Pipeline
+- Works with recorded video files
+- Frame-by-frame processing
+- Annotated output video generation
+- Bounding boxes + object IDs + event labels
+
+### 📊 Intelligent Output
+- Real-time statistics (object count, events)
+- Event-aware visual annotations
+- Structured event signals for future reporting systems
 
 ---
 
 ## System Architecture
-
-Current pipeline:
 Video Input
-|
+↓
 Frame Processing
-|
+↓
 YOLOv8 Detection
-|
-Object Tracking
-|
-Event Analysis (in development)
-|
-Reporting & Monitoring
+↓
+Object Tracking (Centroid-based)
+↓
+Event Detection Engine
+↓
+Annotated Video Output
 
-
-The system is designed with independent modules to allow future improvements without restructuring the complete pipeline.
+The system is modular, allowing independent improvements in detection, tracking, or event analysis without redesigning the entire pipeline.
 
 ---
 
-## Planned Features
+## Demo
 
-- Loitering detection
-- Restricted zone violation detection
-- Rapid movement analysis
-- Crowd formation detection
-- Event-based reporting
-- Risk-level assessment
-- Real-time monitoring dashboard
+The system processes input video and generates an annotated output including:
+
+- Bounding boxes
+- Object IDs
+- Event labels
+- Real-time object count
+
+Example capabilities observed:
+
+- Multi-person tracking (5–10 individuals)
+- Stable ID assignment across frames
+- Event triggering in dynamic crowd scenarios
 
 ---
 
@@ -60,10 +79,10 @@ The system is designed with independent modules to allow future improvements wit
 
 - Python
 - PyTorch
-- YOLOv8
+- YOLOv8 (Ultralytics)
 - OpenCV
-- ByteTrack
-- Streamlit
+- Custom Centroid-Based Tracking
+- Streamlit (for visualization)
 - Git
 
 ---
@@ -71,45 +90,31 @@ The system is designed with independent modules to allow future improvements wit
 ## Project Structure
 sentinel-ai/
 │
-├── tracker/ # Object tracking modules
-├── events/ # Event analysis foundation
-├── main.py # Application entry point
+├── src/
+│ ├── detection/ # YOLO-based detection
+│ ├── tracking/ # Object tracking logic
+│ ├── events/ # Event detection engine
+│ ├── summary/ # Event summarization
+│ └── video/ # Video processing utilities
+│
+├── app/ # Streamlit demo
+├── tests/ # Unit tests
+├── main.py # Entry point
 ├── requirements.txt
 └── README.md
 
 ---
 
-## Development Roadmap
+## How to Run
 
-### Phase 1 - Core AI Pipeline ✅
+```bash
+python main.py --video data/videos/test.mp4
 
-- Object detection
-- Real-time inference
-- Object tracking
-- Persistent ID assignment
-
-### Phase 2 - Event Detection 🚧
-
-- Behavioral analysis
-- Zone-based events
-- Movement analysis
-
-### Phase 3 - Reporting & Intelligence
-
-- Event summaries
-- Incident reporting
-- Advanced analytics
-
-### Phase 4 - Advanced Deployment
-
-- Multi-camera support
-- Edge deployment
-- Model optimization
-
----
+Output will be saved to:
+data/output/output.mp4
 
 ## Purpose
 
-Sentinel AI aims to explore how modern computer vision techniques can transform raw video streams into meaningful operational intelligence for security and monitoring applications.
+Sentinel AI explores how modern AI and computer vision can transform raw surveillance footage into meaningful operational intelligence.
 
----
+The long-term vision is to build intelligent monitoring systems capable of supporting security, defense, and situational awareness applications.
