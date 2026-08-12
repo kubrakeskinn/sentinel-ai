@@ -15,3 +15,6 @@ venv/
 .venv/
 yolov8n.pt
 *.pt
+
+data/
+*.mp4
