@@ -5,7 +5,7 @@ from src.detection.yolo_detector import YOLODetector
 from src.events import EventEngine
 from src.tracking import CentroidTracker
 
-CONF_THRESHOLD = 0.3
+CONF_THRESHOLD = 0.5
 MODEL_PATH = "yolov8n.pt"
 OUTPUT_PATH = "data/output/output.mp4"
 

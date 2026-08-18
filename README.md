@@ -1,6 +1,20 @@
-# Sentinel AI 🚨
+# 🚨 Sentinel AI: Real-Time Tactical Video Analytics & Situational Intelligence
+
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![YOLOv8](https://img.shields.io/badge/YOLOv8-Ultralytics-00599C?style=for-the-badge&logo=yolo&logoColor=white)](https://docs.ultralytics.com/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)](https://opencv.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
 
 **Sentinel AI** is an AI-powered security and defense prototype for video analysis, object tracking, and behavior-driven event detection.
+
+---
+
+## 🎥 Operational Showcase
+
+<p align="center">
+  <img src="assets/demo.gif" alt="Sentinel AI Tactical Demo" width="850">
+</p>
 
 ---
 
@@ -37,21 +51,40 @@ This project is designed as a defense-oriented prototype, emphasizing a clean, e
 ## System Architecture
 
 ```text
-Video Input
-     ↓
-Frame Capture
-     ↓
-YOLOv8 Detection
-     ↓
-Centroid Tracking
-     ↓
-Event Engine Update
-     ↓
-Frame Annotation
-     ↓
-Annotated Video Output
+               ┌────────────────────────┐
+               │   Video Stream / MP4   │
+               └───────────┬────────────┘
+                           │
+                           ▼
+               ┌────────────────────────┐
+               │ Frame Ingestion Buffer │
+               └───────────┬────────────┘
+                           │
+                           ▼
+               ┌────────────────────────┐
+               │    YOLOv8 Detector     │  ◄── Bounding Boxes & Confidences
+               └───────────┬────────────┘
+                           │
+                           ▼
+               ┌────────────────────────┐
+               │ Centroid Multi-Tracker │  ◄── Persistent Track IDs
+               └───────────┬────────────┘
+                           │
+                           ▼
+               ┌────────────────────────┐
+               │  Rule & Event Engine   │  ◄── Loitering, Velocity, Anomalies
+               └───────────┬────────────┘
+                           │
+                           ▼
+               ┌────────────────────────┐
+               │ Frame Annotation & HUD │  ◄── Telemetry & Threat Overlays
+               └───────────┬────────────┘
+                           │
+                           ▼
+               ┌────────────────────────┐
+               │ Annotated Video Output │
+               └────────────────────────┘
 ```
-
 ---
 
 ## Tech Stack
